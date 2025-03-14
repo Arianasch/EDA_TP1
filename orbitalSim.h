@@ -11,22 +11,23 @@
 /**
  * @brief Orbital body definition
  */
-struct OrbitalBody
+typedef struct
 {
-    // Fill in your code here...
+    const char* name; // Name
+    float mass;		  // [kg]
+    float radius;	  // [m]
+    Color color;	  // Raylib color
+    Vector3 position; // [m]
+    Vector3 velocity; // [m/s]
+}OrbitalBody_t;
 
-
-};
-
-/**
- * @brief Orbital simulation definition
- */
-struct OrbitalSim
+typedef struct
 {
-    // Fill in your code here...
-
-
-};
+    float timestep;
+    float startTime;
+    int numberOfBodies;
+    OrbitalBody_t **bodiesArray;
+} OrbitalSim_t;
 
 OrbitalSim *constructOrbitalSim(float timeStep);
 void destroyOrbitalSim(OrbitalSim *sim);

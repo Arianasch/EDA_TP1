@@ -66,9 +66,31 @@ void configureAsteroid(OrbitalBody *body, float centerMass)
  * @param float The time step
  * @return The orbital simulation
  */
-OrbitalSim *constructOrbitalSim(float timeStep)
+OrbitalSim_t *constructOrbitalSim(float timeStep)
 {
-    // Your code goes here...
+ /*float timestep;
+    float startTime;
+    int numberOfBodies;
+    OrbitalBody (*bodiesArray)[];*/
+
+    OrbitalSim_t* OrbitalSim = (OrbitalSim_t* ) malloc(sizeof(OrbitalSim_t));
+    OrbitalSim->bodiesArray = (OrbitalBody_t**) malloc(sizeof(OrbitalBody_t*) * OrbitalSim->numberOfBodies);
+    if (!OrbitalSim) {
+        printf("Error while initializing OrbitalSim\n");
+        exit(1);
+    }
+
+    OrbitalSim->timestep = 0.01; // CALIBRATE
+    OrbitalSim->startTime = 0.0;
+    OrbitalSim->numberOfBodies = 10; // //9 planets, counting Pluto, plus the Sun
+    
+    int i;
+    for (i = 0; i < OrbitalSim->numberOfBodies; i++) {
+
+    }
+    OrbitalSim->bodiesArray[0] = {
+
+    }
 
 
 
