@@ -10,6 +10,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include <iostream>
+#include <sstream>
 
 #include "OrbitalSim.h"
 #include "ephemerides.h"
@@ -35,7 +37,7 @@ float getRandomFloat(float min, float max)
  * @param body An orbital body
  * @param centerMass The mass of the most massive object in the star system
  */
-void configureAsteroid(OrbitalBody *body, float centerMass)
+/*void configureAsteroid(OrbitalBody* body, float centerMass)
 {
     // Logit distribution
     float x = getRandomFloat(0, 1);
@@ -58,7 +60,7 @@ void configureAsteroid(OrbitalBody *body, float centerMass)
     // body->color = GRAY;
     // body->position = {r * cosf(phi), 0, r * sinf(phi)};
     // body->velocity = {-v * sinf(phi), vy, v * cosf(phi)};
-}
+} */
 
 /**
  * @brief Constructs an orbital simulation
@@ -74,9 +76,13 @@ OrbitalSim_t *constructOrbitalSim(float timeStep)
     OrbitalBody (*bodiesArray)[];*/
 
     OrbitalSim_t* OrbitalSim = (OrbitalSim_t* ) malloc(sizeof(OrbitalSim_t));
-    OrbitalSim->bodiesArray = (OrbitalBody_t**) malloc(sizeof(OrbitalBody_t*) * OrbitalSim->numberOfBodies);
     if (!OrbitalSim) {
-        printf("Error while initializing OrbitalSim\n");
+        std::cout << "Error while allocating memory for OrbitalSim";
+        exit(1);
+    }
+    OrbitalSim->bodiesArray = (OrbitalBody_t**)malloc(sizeof(OrbitalBody_t*) * OrbitalSim->numberOfBodies);
+    if (!OrbitalSim->bodiesArray) {
+        std::cout << "Error while allocating memory for bodiesArray";
         exit(1);
     }
 
@@ -86,13 +92,14 @@ OrbitalSim_t *constructOrbitalSim(float timeStep)
     
     int i;
     for (i = 0; i < OrbitalSim->numberOfBodies; i++) {
-
+        OrbitalSim->bodiesArray[i]->name = solarSystem[i].name;
+        OrbitalSim->bodiesArray[i]->mass = solarSystem[i].mass;
+        OrbitalSim->bodiesArray[i]->radius = solarSystem[i].radius;
+        OrbitalSim->bodiesArray[i]->color = solarSystem[i].color;
+        OrbitalSim->bodiesArray[i]->position = solarSystem[i].position;
+        OrbitalSim->bodiesArray[i]->velocity = solarSystem[i].velocity;
     }
-    OrbitalSim->bodiesArray[0] = {
-
-    }
-
-
+    
 
     return NULL; // This should return your orbital sim
 }

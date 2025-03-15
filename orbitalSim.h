@@ -8,6 +8,8 @@
 #ifndef ORBITALSIM_H
 #define ORBITALSIM_H
 
+#include "raylib.h"
+
 /**
  * @brief Orbital body definition
  */
