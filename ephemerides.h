@@ -14,6 +14,7 @@
 struct EphemeridesBody
 {
     const char *name; // Name
+    //char* name; // Name
     float mass;		  // [kg]
     float radius;	  // [m]
     Color color;	  // Raylib color

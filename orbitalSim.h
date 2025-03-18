@@ -16,6 +16,7 @@
 typedef struct
 {
     const char* name; // Name
+    //char* name; // Name
     float mass;		  // [kg]
     float radius;	  // [m]
     Color color;	  // Raylib color
@@ -31,9 +32,9 @@ typedef struct
     OrbitalBody_t **bodiesArray;
 } OrbitalSim_t;
 
-OrbitalSim *constructOrbitalSim(float timeStep);
-void destroyOrbitalSim(OrbitalSim *sim);
+OrbitalSim_t *constructOrbitalSim(float timeStep);
+void destroyOrbitalSim(OrbitalSim_t *sim);
 
-void updateOrbitalSim(OrbitalSim *sim);
+void updateOrbitalSim(OrbitalSim_t *sim);
 
 #endif

@@ -31,7 +31,7 @@ float getRandomFloat(float min, float max)
     return min + (max - min) * rand() / (float)RAND_MAX;
 }
 
-/**
+/*
  * @brief Configures an asteroid
  *
  * @param body An orbital body
@@ -62,56 +62,75 @@ float getRandomFloat(float min, float max)
     // body->velocity = {-v * sinf(phi), vy, v * cosf(phi)};
 } */
 
-/**
+/*
  * @brief Constructs an orbital simulation
  *
  * @param float The time step
  * @return The orbital simulation
  */
-OrbitalSim_t *constructOrbitalSim(float timeStep)
+OrbitalSim_t* constructOrbitalSim(float timeStep)
 {
- /*float timestep;
-    float startTime;
-    int numberOfBodies;
-    OrbitalBody (*bodiesArray)[];*/
-
-    OrbitalSim_t* OrbitalSim = (OrbitalSim_t* ) malloc(sizeof(OrbitalSim_t));
-    if (!OrbitalSim) {
+    OrbitalSim_t* sim = (OrbitalSim_t*)malloc(sizeof(OrbitalSim_t));
+    if (!sim) {
         std::cout << "Error while allocating memory for OrbitalSim";
         exit(1);
     }
-    OrbitalSim->bodiesArray = (OrbitalBody_t**)malloc(sizeof(OrbitalBody_t*) * OrbitalSim->numberOfBodies);
-    if (!OrbitalSim->bodiesArray) {
+
+    sim->timestep = 0.01; // CALIBRATE
+    sim->startTime = 0.0;
+    sim->numberOfBodies = 10; // 9 planets, counting Pluto, plus the Sun
+
+    sim->bodiesArray = (OrbitalBody_t**)malloc(sizeof(OrbitalBody_t*) * sim->numberOfBodies);
+    if (!sim->bodiesArray) {
         std::cout << "Error while allocating memory for bodiesArray";
+        free(sim);
         exit(1);
     }
 
-    OrbitalSim->timestep = 0.01; // CALIBRATE
-    OrbitalSim->startTime = 0.0;
-    OrbitalSim->numberOfBodies = 10; // //9 planets, counting Pluto, plus the Sun
-    
     int i;
-    for (i = 0; i < OrbitalSim->numberOfBodies; i++) {
-        OrbitalSim->bodiesArray[i]->name = solarSystem[i].name;
-        OrbitalSim->bodiesArray[i]->mass = solarSystem[i].mass;
-        OrbitalSim->bodiesArray[i]->radius = solarSystem[i].radius;
-        OrbitalSim->bodiesArray[i]->color = solarSystem[i].color;
-        OrbitalSim->bodiesArray[i]->position = solarSystem[i].position;
-        OrbitalSim->bodiesArray[i]->velocity = solarSystem[i].velocity;
+    for (i=0; i < sim->numberOfBodies; i++) {
+        sim->bodiesArray[i] = (OrbitalBody_t*)malloc(sizeof(OrbitalBody_t));
+        if (!sim->bodiesArray[i]) {
+            std::cout << "Error while allocating memory for body " << i << std::endl;
+            int j;
+            for (j = 0; j < i; j++) {
+                free(sim->bodiesArray[j]);
+            }
+            free(sim->bodiesArray);
+            free(sim);
+            exit(1);
+        }
     }
     
+    for (i=0; i < sim->numberOfBodies; i++) {
+        sim->bodiesArray[i]->name = solarSystem[i].name;
+        sim->bodiesArray[i]->mass = solarSystem[i].mass;
+        sim->bodiesArray[i]->radius = solarSystem[i].radius;
+        sim->bodiesArray[i]->color = solarSystem[i].color;
 
-    return NULL; // This should return your orbital sim
+        sim->bodiesArray[i]->position.x = solarSystem[i].position.x;
+        sim->bodiesArray[i]->position.y = solarSystem[i].position.y;
+        sim->bodiesArray[i]->position.z = solarSystem[i].position.z;
+
+        sim->bodiesArray[i]->velocity.x = solarSystem[i].velocity.x;
+        sim->bodiesArray[i]->velocity.y = solarSystem[i].velocity.y;
+        sim->bodiesArray[i]->velocity.z = solarSystem[i].velocity.z;
+    }
+    
+    return sim; // This should return your orbital sim
 }
 
 /**
  * @brief Destroys an orbital simulation
  */
-void destroyOrbitalSim(OrbitalSim *sim)
+void destroyOrbitalSim(OrbitalSim_t *sim)
 {
-    // Your code goes here...
-
-
+    int i;
+    for (i = 0; i < sim->numberOfBodies; i++) {
+		free(sim->bodiesArray[i]);
+    }
+    free(sim->bodiesArray);
+    free(sim);
 }
 
 /**
@@ -119,9 +138,6 @@ void destroyOrbitalSim(OrbitalSim *sim)
  *
  * @param sim The orbital simulation
  */
-void updateOrbitalSim(OrbitalSim *sim)
+void updateOrbitalSim(OrbitalSim_t *sim)
 {
-    // Your code goes here...
-
-
 }

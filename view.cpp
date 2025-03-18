@@ -85,7 +85,7 @@ bool isViewRendering(View *view)
  * @param view The view
  * @param sim The orbital sim
  */
-void renderView(View *view, OrbitalSim *sim)
+void renderView(View *view, OrbitalSim_t *sim)
 {
     UpdateCamera(&view->camera, CAMERA_FREE);
 
