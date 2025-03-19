@@ -19,7 +19,7 @@
 #define GRAVITATIONAL_CONSTANT 6.6743E-11F
 #define ASTEROIDS_MEAN_RADIUS 4E11F
 
-static Vector3 calculateAcceleration(OrbitalSim_t* sim, int i);
+static Vector3 calculateAcceleration(OrbitalSim_t* sim, int i, bool isBody);
 
 /**
  * @brief Gets a uniform random value in a range
@@ -39,7 +39,7 @@ float getRandomFloat(float min, float max)
  * @param body An orbital body
  * @param centerMass The mass of the most massive object in the star system
  */
-/*void configureAsteroid(OrbitalBody* body, float centerMass)
+void configureAsteroid(OrbitalBody_t* body, float centerMass)
 {
     // Logit distribution
     float x = getRandomFloat(0, 1);
@@ -56,13 +56,12 @@ float getRandomFloat(float min, float max)
     float v = sqrtf(GRAVITATIONAL_CONSTANT * centerMass / r) * getRandomFloat(0.6F, 1.2F);
     float vy = getRandomFloat(-1E2F, 1E2F);
 
-    // Fill in with your own fields:
-    // body->mass = 1E12F;  // Typical asteroid weight: 1 billion tons
-    // body->radius = 2E3F; // Typical asteroid radius: 2km
-    // body->color = GRAY;
-    // body->position = {r * cosf(phi), 0, r * sinf(phi)};
-    // body->velocity = {-v * sinf(phi), vy, v * cosf(phi)};
-} */
+    body->mass = 1E12F;  // Typical asteroid weight: 1 billion tons
+    body->radius = 2E3F; // Typical asteroid radius: 2km
+    body->color = GRAY;
+    body->position = {r * cosf(phi), 0, r * sinf(phi)};
+    body->velocity = {-v * sinf(phi), vy, v * cosf(phi)};
+}
 
 /*
  * @brief Constructs an orbital simulation
@@ -80,7 +79,8 @@ OrbitalSim_t* constructOrbitalSim(float timeStep)
 
     sim->timestep = 0.01; // CALIBRATE
     sim->startTime = 0.0;
-    sim->numberOfBodies = 10; // 9 planets, counting Pluto, plus the Sun
+    sim->numberOfBodies = 9; // 8 planets, plus the Sun
+    sim->numberOfAsteroids = 100;
 
     sim->bodiesArray = (OrbitalBody_t**)malloc(sizeof(OrbitalBody_t*) * sim->numberOfBodies);
     if (!sim->bodiesArray) {
@@ -89,8 +89,7 @@ OrbitalSim_t* constructOrbitalSim(float timeStep)
         exit(1);
     }
 
-    int i;
-    for (i=0; i < sim->numberOfBodies; i++) {
+    for (int i=0; i < sim->numberOfBodies; i++) {
         sim->bodiesArray[i] = (OrbitalBody_t*)malloc(sizeof(OrbitalBody_t));
         if (!sim->bodiesArray[i]) {
             std::cout << "Error while allocating memory for body " << i << std::endl;
@@ -103,8 +102,37 @@ OrbitalSim_t* constructOrbitalSim(float timeStep)
             exit(1);
         }
     }
+
+    sim->asteroidsArray = (OrbitalBody_t**)malloc(sizeof(OrbitalBody_t*) * sim->numberOfAsteroids);
+    if (!sim->asteroidsArray) {
+        std::cout << "Error while allocating memory for asteroidsArray";
+        for (int j = 0; j < sim->numberOfBodies; j++) {
+            free(sim->bodiesArray[j]);
+        }
+        free(sim->bodiesArray);
+        free(sim);
+        exit(1);
+    }
+
+
+    for (int i = 0; i < sim->numberOfAsteroids; i++) {
+        sim->asteroidsArray[i] = (OrbitalBody_t*)malloc(sizeof(OrbitalBody_t));
+        if (!sim->bodiesArray[i]) {
+            std::cout << "Error while allocating memory for asteroid " << i << std::endl;
+
+            for (int j = 0; j < i; j++) {
+                free(sim->asteroidsArray[j]);
+            }
+            for (int j = 0; j < sim->numberOfBodies; j++) {
+                free(sim->bodiesArray[j]);
+            }
+            free(sim->bodiesArray);
+            free(sim);
+            exit(1);
+        }
+    }
     
-    for (i=0; i < sim->numberOfBodies; i++) {
+    for (int i=0; i < sim->numberOfBodies; i++) {
         sim->bodiesArray[i]->name = solarSystem[i].name;
         sim->bodiesArray[i]->mass = solarSystem[i].mass;
         sim->bodiesArray[i]->radius = solarSystem[i].radius;
@@ -118,6 +146,10 @@ OrbitalSim_t* constructOrbitalSim(float timeStep)
         sim->bodiesArray[i]->velocity.y = solarSystem[i].velocity.y;
         sim->bodiesArray[i]->velocity.z = solarSystem[i].velocity.z;
     }
+
+	for (int i = 0; i < sim->numberOfAsteroids; i++) {
+		configureAsteroid(sim->asteroidsArray[i], sim->bodiesArray[0]->mass);
+	}
     
     return sim; // This should return your orbital sim
 }
@@ -130,6 +162,10 @@ void destroyOrbitalSim(OrbitalSim_t *sim)
     for (int i=0; i < sim->numberOfBodies; i++) {
 		free(sim->bodiesArray[i]);
     }
+    for (int i = 0; i < sim->numberOfAsteroids; i++) {
+        free(sim->asteroidsArray[i]);
+    }
+    free(sim->asteroidsArray);
     free(sim->bodiesArray);
     free(sim);
 }
@@ -142,9 +178,15 @@ void destroyOrbitalSim(OrbitalSim_t *sim)
 void updateOrbitalSim(OrbitalSim_t *sim)
 {
     for (int j=0; j < sim->numberOfBodies; j++) {
-        Vector3 bodyAcceleration = calculateAcceleration(sim, j);
+        Vector3 bodyAcceleration = calculateAcceleration(sim, j, true);
         sim->bodiesArray[j]->velocity += bodyAcceleration * sim->timestep;
         sim->bodiesArray[j]->position += sim->bodiesArray[j]->velocity * sim->timestep;
+    }
+
+    for (int j = 0; j < sim->numberOfAsteroids; j++) {
+        Vector3 asteroidAcceleration = calculateAcceleration(sim, j, false);
+        sim->asteroidsArray[j]->velocity += asteroidAcceleration * sim->timestep;
+        sim->asteroidsArray[j]->position += sim->asteroidsArray[j]->velocity * sim->timestep;
     }
 }
 
@@ -153,20 +195,36 @@ void updateOrbitalSim(OrbitalSim_t *sim)
  *
  * @param The orbital simulation and the index of the body whose acceleration it will calculate.
  */
-static Vector3 calculateAcceleration(OrbitalSim_t *sim, int i) {
+static Vector3 calculateAcceleration(OrbitalSim_t *sim, int i, bool isBody) {
     Vector3 aux = { 0, 0, 0 };
     
 	// Calculates the sum of the force all bodies exert on the body i except for itself.
-    for (int j=0; j < sim->numberOfBodies; j++) {
-        if (i != j) {
-            Vector3 differencePositions = Vector3Subtract(sim->bodiesArray[i]->position, sim->bodiesArray[j]->position);
-            Vector3 normalizedDifference = Vector3Normalize(differencePositions);
-            
-            float module = sqrt(differencePositions.x * differencePositions.x + differencePositions.y * differencePositions.y + differencePositions.z * differencePositions.z);
+    if (isBody) {
+        for (int j = 0; j < sim->numberOfBodies; j++) {
+            if (i != j) {
+                Vector3 differencePositions = Vector3Subtract(sim->bodiesArray[i]->position, sim->bodiesArray[j]->position);
+                Vector3 normalizedDifference = Vector3Normalize(differencePositions);
 
-            aux.x += sim->bodiesArray[j]->mass * normalizedDifference.x / module;
-            aux.y += sim->bodiesArray[j]->mass * normalizedDifference.y / module;
-            aux.z += sim->bodiesArray[j]->mass * normalizedDifference.z / module;
+                float module = sqrt(differencePositions.x * differencePositions.x + differencePositions.y * differencePositions.y + differencePositions.z * differencePositions.z);
+
+                aux.x += sim->bodiesArray[j]->mass * normalizedDifference.x / module;
+                aux.y += sim->bodiesArray[j]->mass * normalizedDifference.y / module;
+                aux.z += sim->bodiesArray[j]->mass * normalizedDifference.z / module;
+            }
+        }
+    }
+    else {
+        for (int j = 0; j < sim->numberOfAsteroids; j++) {
+            if (i != j) {
+                Vector3 differencePositions = Vector3Subtract(sim->asteroidsArray[i]->position, sim->asteroidsArray[j]->position);
+                Vector3 normalizedDifference = Vector3Normalize(differencePositions);
+
+                float module = sqrt(differencePositions.x * differencePositions.x + differencePositions.y * differencePositions.y + differencePositions.z * differencePositions.z);
+
+                aux.x += sim->asteroidsArray[j]->mass * normalizedDifference.x / module;
+                aux.y += sim->asteroidsArray[j]->mass * normalizedDifference.y / module;
+                aux.z += sim->asteroidsArray[j]->mass * normalizedDifference.z / module;
+            }
         }
     }
     return Vector3Scale(aux, -GRAVITATIONAL_CONSTANT);

@@ -7,7 +7,7 @@
 
 #include <time.h>
 
-#include "View.h"
+#include "view.h"
 
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
@@ -99,13 +99,17 @@ void renderView(View *view, OrbitalSim_t *sim)
         DrawSphere(Vector3Scale(sim->bodiesArray[i]->position, 1E-11f), 0.005F * logf(sim->bodiesArray[i]->radius), sim->bodiesArray[i]->color);
         DrawPoint3D(Vector3Scale(sim->bodiesArray[i]->position, 1E-11f), sim->bodiesArray[i]->color);
     }
+    for (int i = 0; i < sim->numberOfAsteroids; i++) {
+        DrawSphere(Vector3Scale(sim->asteroidsArray[i]->position, 1E-11f), 0.005F * logf(sim->asteroidsArray[i]->radius), sim->asteroidsArray[i]->color);
+        DrawPoint3D(Vector3Scale(sim->asteroidsArray[i]->position, 1E-11f), sim->asteroidsArray[i]->color);
+    }
 
     DrawGrid(10, 10.0f);
     EndMode3D();
 
     // Fill in your 2D drawing code here:
-    //DrawFPS( WINDOW_WIDTH - 100, WINDOW_HEIGHT  - 30);
-	//DrawText(getISODate(sim->startTime), 10, WINDOW_HEIGHT - 30, 20, WHITE);
-
+    DrawFPS( WINDOW_WIDTH - 1260, WINDOW_HEIGHT - 710);
+	DrawText(getISODate(sim->startTime), WINDOW_WIDTH - 1260, WINDOW_HEIGHT - 680, 20, WHITE);
+    
     EndDrawing();
 }
