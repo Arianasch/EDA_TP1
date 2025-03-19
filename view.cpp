@@ -95,15 +95,17 @@ void renderView(View *view, OrbitalSim_t *sim)
     BeginMode3D(view->camera);
 
     // Fill in your 3D drawing code here:
-
-
+    for (int i = 0; i < sim->numberOfBodies; i++) {
+        DrawSphere(Vector3Scale(sim->bodiesArray[i]->position, 1E-11f), 0.005F * logf(sim->bodiesArray[i]->radius), sim->bodiesArray[i]->color);
+        DrawPoint3D(Vector3Scale(sim->bodiesArray[i]->position, 1E-11f), sim->bodiesArray[i]->color);
+    }
 
     DrawGrid(10, 10.0f);
     EndMode3D();
 
     // Fill in your 2D drawing code here:
-
-
+    //DrawFPS( WINDOW_WIDTH - 100, WINDOW_HEIGHT  - 30);
+	//DrawText(getISODate(sim->startTime), 10, WINDOW_HEIGHT - 30, 20, WHITE);
 
     EndDrawing();
 }

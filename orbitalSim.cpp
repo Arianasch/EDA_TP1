@@ -19,6 +19,8 @@
 #define GRAVITATIONAL_CONSTANT 6.6743E-11F
 #define ASTEROIDS_MEAN_RADIUS 4E11F
 
+static Vector3 calculateAcceleration(OrbitalSim_t* sim, int i);
+
 /**
  * @brief Gets a uniform random value in a range
  *
@@ -92,8 +94,8 @@ OrbitalSim_t* constructOrbitalSim(float timeStep)
         sim->bodiesArray[i] = (OrbitalBody_t*)malloc(sizeof(OrbitalBody_t));
         if (!sim->bodiesArray[i]) {
             std::cout << "Error while allocating memory for body " << i << std::endl;
-            int j;
-            for (j = 0; j < i; j++) {
+            
+            for (int j=0; j<i; j++) {
                 free(sim->bodiesArray[j]);
             }
             free(sim->bodiesArray);
@@ -125,8 +127,7 @@ OrbitalSim_t* constructOrbitalSim(float timeStep)
  */
 void destroyOrbitalSim(OrbitalSim_t *sim)
 {
-    int i;
-    for (i = 0; i < sim->numberOfBodies; i++) {
+    for (int i=0; i < sim->numberOfBodies; i++) {
 		free(sim->bodiesArray[i]);
     }
     free(sim->bodiesArray);
@@ -140,4 +141,33 @@ void destroyOrbitalSim(OrbitalSim_t *sim)
  */
 void updateOrbitalSim(OrbitalSim_t *sim)
 {
+    for (int j=0; j < sim->numberOfBodies; j++) {
+        Vector3 bodyAcceleration = calculateAcceleration(sim, j);
+        sim->bodiesArray[j]->velocity += bodyAcceleration * sim->timestep;
+        sim->bodiesArray[j]->position += sim->bodiesArray[j]->velocity * sim->timestep;
+    }
+}
+
+/**
+ * @brief Calculates the acceleration of a body.
+ *
+ * @param The orbital simulation and the index of the body whose acceleration it will calculate.
+ */
+static Vector3 calculateAcceleration(OrbitalSim_t *sim, int i) {
+    Vector3 aux = { 0, 0, 0 };
+    
+	// Calculates the sum of the force all bodies exert on the body i except for itself.
+    for (int j=0; j < sim->numberOfBodies; j++) {
+        if (i != j) {
+            Vector3 differencePositions = Vector3Subtract(sim->bodiesArray[i]->position, sim->bodiesArray[j]->position);
+            Vector3 normalizedDifference = Vector3Normalize(differencePositions);
+            
+            float module = sqrt(differencePositions.x * differencePositions.x + differencePositions.y * differencePositions.y + differencePositions.z * differencePositions.z);
+
+            aux.x += sim->bodiesArray[j]->mass * normalizedDifference.x / module;
+            aux.y += sim->bodiesArray[j]->mass * normalizedDifference.y / module;
+            aux.z += sim->bodiesArray[j]->mass * normalizedDifference.z / module;
+        }
+    }
+    return Vector3Scale(aux, -GRAVITATIONAL_CONSTANT);
 }

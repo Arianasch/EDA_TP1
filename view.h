@@ -9,6 +9,7 @@
 #define ORBITALSIMVIEW_H
 
 #include <raylib.h>
+#include <raymath.h>
 
 #include "OrbitalSim.h"
 
