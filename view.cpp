@@ -96,13 +96,13 @@ void renderView(View *view, OrbitalSim_t *sim)
 
     // Fill in your 3D drawing code here:
     for (int i = 0; i < sim->numberOfBodies; i++) {
-        DrawSphere(Vector3Scale(sim->bodiesArray[i]->position, 1E-11f), 0.005F * logf(sim->bodiesArray[i]->radius), sim->bodiesArray[i]->color);
-        DrawPoint3D(Vector3Scale(sim->bodiesArray[i]->position, 1E-11f), sim->bodiesArray[i]->color);
+        DrawSphere(Vector3Scale(sim->bodiesArray[i].position, 1E-11f), 0.005F * logf(sim->bodiesArray[i].radius), sim->bodiesArray[i].color);
+        DrawPoint3D(Vector3Scale(sim->bodiesArray[i].position, 1E-11f), sim->bodiesArray[i].color);
     }
-    for (int i = 0; i < sim->numberOfAsteroids; i++) {
+/*    for (int i = 0; i < sim->numberOfAsteroids; i++) {
         DrawSphere(Vector3Scale(sim->asteroidsArray[i]->position, 1E-11f), 0.005F * logf(sim->asteroidsArray[i]->radius), sim->asteroidsArray[i]->color);
         DrawPoint3D(Vector3Scale(sim->asteroidsArray[i]->position, 1E-11f), sim->asteroidsArray[i]->color);
-    }
+    } */
 
     DrawGrid(10, 10.0f);
     EndMode3D();
