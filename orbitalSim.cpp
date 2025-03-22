@@ -19,7 +19,7 @@
 #define GRAVITATIONAL_CONSTANT 6.6743E-11F
 #define ASTEROIDS_MEAN_RADIUS 4E11F
 
-static void calculateAccelerations(OrbitalSim_t*, Vector3*);
+static void calculatePlanetsAccelerations(OrbitalSim_t*, Vector3*);
 
 /**
  * @brief Gets a uniform random value in a range
@@ -50,7 +50,7 @@ void configureAsteroid(OrbitalBody_t* body, float centerMass)
     float phi = getRandomFloat(0, 2.0F * (float)M_PI);
 
     // Surprise!
-    // phi = 0;
+   // phi = 0;  this is the easter egg, in the read me we explain.
 
     // https://en.wikipedia.org/wiki/Circular_orbit#Velocity
     float v = sqrtf(GRAVITATIONAL_CONSTANT * centerMass / r) * getRandomFloat(0.6F, 1.2F);
@@ -77,9 +77,11 @@ OrbitalSim_t* constructOrbitalSim(float timeStep)
         exit(1);
     }
 
-    sim->timestep = timeStep; // CALIBRATE
+    sim->timestep = timeStep; 
     sim->startTime = 0.0;
+    sim->currentTime = sim->startTime;
     sim->numberOfBodies = 9; // 8 planets, plus the Sun
+    sim->numberOfAsteroids = 500;
 
     sim->bodiesArray = (OrbitalBody_t*)malloc(sizeof(OrbitalBody_t) * sim->numberOfBodies);
     if (!sim->bodiesArray) {
@@ -87,6 +89,14 @@ OrbitalSim_t* constructOrbitalSim(float timeStep)
         free(sim);
         exit(1);
     }
+    sim->asteroidsArray = (OrbitalBody_t*)malloc(sizeof(OrbitalBody_t) * sim->numberOfAsteroids);
+    if (!sim->asteroidsArray) {
+        std::cout << "Error while allocating memory for asteroidsArray";
+        free(sim->bodiesArray);
+        free(sim);
+        exit(1);
+    }
+
 
  /*   sim->asteroidsArray = (OrbitalBody_t**)malloc(sizeof(OrbitalBody_t*) * sim->numberOfAsteroids);
     if (!sim->asteroidsArray) {
@@ -132,7 +142,10 @@ OrbitalSim_t* constructOrbitalSim(float timeStep)
      //   sim->bodiesArray[i].velocity.y = solarSystem[i].[i]velocity.y;
      //   sim->bodiesArray[i].velocity.z = solarSystem[i].velocity.z;
     }
-
+    for (int i = 0; i < sim->numberOfAsteroids; i++)
+    {
+        configureAsteroid(&(sim->asteroidsArray[i]), sim->bodiesArray[0].mass);
+    }
 	/*for (int i = 0; i < sim ->numberOfAsteroids; i++) {
 		configureAsteroid(sim->asteroidsArray[i], sim->bodiesArray[0]->mass);
 	}*/
@@ -145,8 +158,8 @@ OrbitalSim_t* constructOrbitalSim(float timeStep)
  */
 void destroyOrbitalSim(OrbitalSim_t *sim)
 {
- //   free(sim->asteroidsArray);
     free(sim->bodiesArray);
+    free(sim->asteroidsArray);
     free(sim);
 }
 
@@ -162,6 +175,7 @@ void updateOrbitalSim(OrbitalSim_t *sim)
       // if (!sim) { no tiene ningun sentido hacer esto.
             std::cout << "Error while allocating memory for accelerationsArray";
             free(sim->bodiesArray);
+            free(sim->asteroidsArray);
             free(sim);
             exit(1);
        // }
@@ -172,10 +186,21 @@ void updateOrbitalSim(OrbitalSim_t *sim)
 
     }
     
+    calculatePlanetsAccelerations(sim, accelerationsArray);  //just for the planets so that after velocity and position are calculated
 
-    calculateAccelerations(sim, accelerationsArray);
+    for (int i = 0; i < sim->numberOfAsteroids; i++)  //no me parece q se necesite una funcion para esto. es corto y no de la misma complejidad que oara los planetas
+        //no intentes hacerlo, se va a confundir todo. 
+    {
+        Vector3 differencePositions = Vector3Subtract(sim->asteroidsArray[i].position, sim->bodiesArray[0].position);//each asteroid just with The Sun
+        Vector3 normalizedDifference = Vector3Normalize(differencePositions);
+        float squareNorm = differencePositions.x * differencePositions.x + differencePositions.y * differencePositions.y + differencePositions.z * differencePositions.z;
+        Vector3 acceleration = Vector3Scale(normalizedDifference, (sim->bodiesArray[0].mass * (-1) * (GRAVITATIONAL_CONSTANT)) / squareNorm);
+        sim->asteroidsArray[i].velocity = Vector3Add(sim->asteroidsArray[i].velocity, Vector3Scale(acceleration, sim->timestep));
+        sim->asteroidsArray[i].position = Vector3Add(sim->asteroidsArray[i].position, Vector3Scale(sim->asteroidsArray[i].velocity, sim->timestep));
     
-    for (int j = 0; j < sim->numberOfBodies; j++) {
+    }
+
+    for (int j = 0; j < sim->numberOfBodies; j++) { //once the planet's acceleratios are calculated,each planet's velocity is recalculated, then their respectives positions.
 
         accelerationsArray[j] =Vector3Scale(accelerationsArray[j], (-1)*(GRAVITATIONAL_CONSTANT));
         sim->bodiesArray[j].velocity = Vector3Add(sim->bodiesArray[j].velocity, Vector3Scale(accelerationsArray[j], sim->timestep));
@@ -186,6 +211,7 @@ void updateOrbitalSim(OrbitalSim_t *sim)
     }
 
     free(accelerationsArray);
+    sim->currentTime += sim->timestep;
 }
 
 /**
@@ -193,20 +219,18 @@ void updateOrbitalSim(OrbitalSim_t *sim)
  *
  * @param The orbital simulation and the index of the body whose acceleration it will calculate.
  */
-static void calculateAccelerations(OrbitalSim_t *sim, Vector3 *accelerationsArray) {
+static void calculatePlanetsAccelerations(OrbitalSim_t *sim, Vector3 *accelerationsArray) {
     
-    Vector3 differencePositions, normalizedDifferencei, normalizedDifferencej, differencePositionsj;
+    Vector3 differencePositions, normalizedDifference;
     float squareNorm;
-    //esas dos normalized despues las paso a uno, es solopara probar
-
-    for (int i = 0; i < sim->numberOfBodies; i++)  //i va de cero a 8 incluyendo. ver doc adjunto. esto luego borro, es para ver si funciona y explicar
+   
+    for (int i = 0; i < sim->numberOfBodies; i++)  
     {
-        for (int j = i + 1; j < sim->numberOfBodies ; j++)
-        {
+        for (int j = i + 1; j < sim->numberOfBodies ; j++){  //j= i+1 means that the gravitational force between two planets is calculated 
+                                                            //just one time since the only difference is the direction(unitary vector)
             differencePositions = Vector3Subtract(sim->bodiesArray[i].position, sim->bodiesArray[j].position); 
-            normalizedDifferencei = Vector3Normalize(differencePositions);
-            differencePositionsj = Vector3Subtract(sim->bodiesArray[j].position, sim->bodiesArray[i].position);
-            normalizedDifferencej = Vector3Normalize(differencePositionsj);
+            normalizedDifference = Vector3Normalize(differencePositions);   //the unitary vector is calculated from body i to body j. Then 
+                                                                            //when body j's acceleration is calculated we multiply -1.
             // MAL, NO ERA RAIZ: ES NORMA AL CUADRADO
             //      module = sqrt(differencePositions.x * differencePositions.x + differencePositions.y * differencePositions.y + differencePositions.z * differencePositions.z);
                 //  aux.x = normalizedDifference.x / module;
@@ -214,9 +238,11 @@ static void calculateAccelerations(OrbitalSim_t *sim, Vector3 *accelerationsArra
                   //aux.z = normalizedDifference.z / module;
             squareNorm = differencePositions.x * differencePositions.x + differencePositions.y * differencePositions.y + differencePositions.z * differencePositions.z;
 
-         //   if (i) { esta mal, porque si i es cero y no entra, tampoco me cambia la ac de j q seria uno
-            accelerationsArray[i] = Vector3Add(accelerationsArray[i], Vector3Scale(normalizedDifferencei, (sim->bodiesArray[j].mass / squareNorm)));
-            accelerationsArray[j] = Vector3Add(accelerationsArray[j], Vector3Scale(normalizedDifferencej, (sim->bodiesArray[i].mass / squareNorm)));
+         //   if (i) { esta mal, porque si i es cero y no entra, tampoco me cambia la ac de j q seria uno. esta mal no calcular la del sol, es minima pero exicste. borrar luego
+            accelerationsArray[i] = Vector3Add(accelerationsArray[i], Vector3Scale(normalizedDifference, (sim->bodiesArray[j].mass / squareNorm)));  
+            accelerationsArray[j] = Vector3Add(accelerationsArray[j], Vector3Scale(normalizedDifference, (((-1)*sim->bodiesArray[i].mass) / squareNorm)));  
+            //The gravitational constant is multiplied at the end so that we avoid multiple unnecessary calculus. The gravitational force is not directy calculated
+            // so that multiplying the body's own mass was avoided
                 
          //   }
         }

@@ -28,9 +28,11 @@ typedef struct
 {
     float timestep;
     float startTime;
+    float currentTime;
     int numberOfBodies;
+    int numberOfAsteroids;
     OrbitalBody_t *bodiesArray;
-   // OrbitalBody_t** asteroidsArray;
+    OrbitalBody_t * asteroidsArray;
 } OrbitalSim_t;
 
 OrbitalSim_t *constructOrbitalSim(float timeStep);

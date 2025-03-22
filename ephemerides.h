@@ -30,6 +30,7 @@ struct EphemeridesBody
 EphemeridesBody solarSystem[] = {
     {
         "Sol",
+        //4*1988500E24F, if the sun was a black hole
         1988500E24F,
         695700E3F,
         GOLD,
@@ -70,6 +71,7 @@ EphemeridesBody solarSystem[] = {
     },
     {
         "Jupiter",
+        //1898.18722E24F *1000, trying what would happen if Jupiter was x1000 bigger
         1898.18722E24F,
         69911E3F,
         BEIGE,

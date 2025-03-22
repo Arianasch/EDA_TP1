@@ -96,20 +96,26 @@ void renderView(View *view, OrbitalSim_t *sim)
 
     // Fill in your 3D drawing code here:
     for (int i = 0; i < sim->numberOfBodies; i++) {
-        DrawSphere(Vector3Scale(sim->bodiesArray[i].position, 1E-11f), 0.005F * logf(sim->bodiesArray[i].radius), sim->bodiesArray[i].color);
-        DrawPoint3D(Vector3Scale(sim->bodiesArray[i].position, 1E-11f), sim->bodiesArray[i].color);
+            DrawSphere(Vector3Scale(sim->bodiesArray[i].position, 1E-11f), 0.005F * logf(sim->bodiesArray[i].radius), sim->bodiesArray[i].color);
+            DrawPoint3D(Vector3Scale(sim->bodiesArray[i].position, 1E-11f), sim->bodiesArray[i].color);
     }
-/*    for (int i = 0; i < sim->numberOfAsteroids; i++) {
-        DrawSphere(Vector3Scale(sim->asteroidsArray[i]->position, 1E-11f), 0.005F * logf(sim->asteroidsArray[i]->radius), sim->asteroidsArray[i]->color);
-        DrawPoint3D(Vector3Scale(sim->asteroidsArray[i]->position, 1E-11f), sim->asteroidsArray[i]->color);
-    } */
+  
+    for (int i = 0; i < sim->numberOfAsteroids; i++) {
+        float camAstDistance = Vector3Distance(Vector3Scale(sim->asteroidsArray[i].position,1E-11f), view->camera.position);
+        if (camAstDistance < 8){//if the camera position is not too far away from the asteroid, a sphere is drawn.Otherwise, a point. This is for efficiency.More in the ReadMe file.
+        DrawSphere(Vector3Scale(sim->asteroidsArray[i].position, 1E-11f), 0.005F * logf(sim->asteroidsArray[i].radius), sim->asteroidsArray[i].color);  
+        }
+        else{
+            DrawPoint3D(Vector3Scale(sim->asteroidsArray[i].position, 1E-11f), sim->asteroidsArray[i].color);
+        }
+    }
 
     DrawGrid(10, 10.0f);
     EndMode3D();
 
     // Fill in your 2D drawing code here:
     DrawFPS( WINDOW_WIDTH - 1260, WINDOW_HEIGHT - 710);
-	DrawText(getISODate(sim->startTime), WINDOW_WIDTH - 1260, WINDOW_HEIGHT - 680, 20, WHITE);
+	DrawText(getISODate(sim->currentTime), WINDOW_WIDTH - 1260, WINDOW_HEIGHT - 680, 20, WHITE);
     
     EndDrawing();
 }
