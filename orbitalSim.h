@@ -1,6 +1,8 @@
 ﻿/**
  * @brief Orbital simulation
  * @author Marc S. Ressl
+ * @author Ariana Schiaffino
+ * @author Rita Moschini
  *
  * @copyright Copyright (c) 2022-2023
  */
@@ -32,12 +34,11 @@ typedef struct
     int numberOfBodies;
     int numberOfAsteroids;
     OrbitalBody_t *bodiesArray;
-    OrbitalBody_t * asteroidsArray;
+    OrbitalBody_t *asteroidsArray;
 } OrbitalSim_t;
 
 OrbitalSim_t *constructOrbitalSim(float timeStep);
 void destroyOrbitalSim(OrbitalSim_t *sim);
-
 void updateOrbitalSim(OrbitalSim_t *sim);
 
 #endif

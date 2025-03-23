@@ -14,7 +14,6 @@
 struct EphemeridesBody
 {
     const char *name; // Name
-    //char* name; // Name
     float mass;		  // [kg]
     float radius;	  // [m]
     Color color;	  // Raylib color
@@ -71,7 +70,6 @@ EphemeridesBody solarSystem[] = {
     },
     {
         "Jupiter",
-        //1898.18722E24F *1000, trying what would happen if Jupiter was x1000 bigger
         1898.18722E24F,
         69911E3F,
         BEIGE,

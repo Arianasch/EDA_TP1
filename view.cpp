@@ -1,6 +1,8 @@
 /**
  * @brief Implements an orbital simulation view
  * @author Marc S. Ressl
+ * @author Ariana Schiaffino
+ * @author Rita Moschini
  *
  * @copyright Copyright (c) 2022-2023
  */
@@ -19,7 +21,7 @@
  * @param timestamp the timestamp
  * @return The ISO date (a raylib string)
  */
-const char *getISODate(float timestamp)
+static const char *getISODate(float timestamp)
 {
     // Timestamp epoch: 1/1/2022
     struct tm unichEpochTM = {0, 0, 0, 1, 0, 122};
@@ -85,8 +87,9 @@ bool isViewRendering(View *view)
  * @param view The view
  * @param sim The orbital sim
  */
-void renderView(View *view, OrbitalSim_t *sim)
+void renderView(View* view, OrbitalSim_t* sim)
 {
+    float camAsteroidDistance;
     UpdateCamera(&view->camera, CAMERA_FREE);
 
     BeginDrawing();
@@ -96,17 +99,26 @@ void renderView(View *view, OrbitalSim_t *sim)
 
     // Fill in your 3D drawing code here:
     for (int i = 0; i < sim->numberOfBodies; i++) {
-            DrawSphere(Vector3Scale(sim->bodiesArray[i].position, 1E-11f), 0.005F * logf(sim->bodiesArray[i].radius), sim->bodiesArray[i].color);
-            DrawPoint3D(Vector3Scale(sim->bodiesArray[i].position, 1E-11f), sim->bodiesArray[i].color);
+       DrawSphere( Vector3Scale(sim->bodiesArray[i].position, 1E-11f),
+                    0.005F * logf(sim->bodiesArray[i].radius),
+                    sim->bodiesArray[i].color );
+
+        DrawPoint3D(Vector3Scale(sim->bodiesArray[i].position, 1E-11f), sim->bodiesArray[i].color);
     }
-  
+
+    /* If the camera position is not too far away from the asteroid, a sphere is drawn. Otherwise,
+       a point is drawn .This is for efficiency. More in the README file. */
     for (int i = 0; i < sim->numberOfAsteroids; i++) {
-        float camAstDistance = Vector3Distance(Vector3Scale(sim->asteroidsArray[i].position,1E-11f), view->camera.position);
-        if (camAstDistance < 8){//if the camera position is not too far away from the asteroid, a sphere is drawn.Otherwise, a point. This is for efficiency.More in the ReadMe file.
-        DrawSphere(Vector3Scale(sim->asteroidsArray[i].position, 1E-11f), 0.005F * logf(sim->asteroidsArray[i].radius), sim->asteroidsArray[i].color);  
+        camAsteroidDistance = Vector3Distance( Vector3Scale(sim->asteroidsArray[i].position,1E-11f),
+                                                view->camera.position );
+        
+        if (camAsteroidDistance < 8) {
+            DrawSphere( Vector3Scale(sim->asteroidsArray[i].position, 1E-11f),
+                        0.005F * logf(sim->asteroidsArray[i].radius),
+                        sim->asteroidsArray[i].color );  
         }
-        else{
-            DrawPoint3D(Vector3Scale(sim->asteroidsArray[i].position, 1E-11f), sim->asteroidsArray[i].color);
+        else {
+            DrawPoint3D( Vector3Scale(sim->asteroidsArray[i].position, 1E-11f), sim->asteroidsArray[i].color );
         }
     }
 

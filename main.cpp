@@ -1,6 +1,8 @@
 ﻿/**
  * @brief Orbital simulation main module
  * @author Marc S. Ressl
+ * @author Ariana Schiaffino
+ * @author Rita Moschini
  *
  * @copyright Copyright (c) 2022-2023
  */
