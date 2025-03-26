@@ -100,8 +100,8 @@ void renderView(View* view, OrbitalSim_t* sim)
     // Fill in your 3D drawing code here:
     for (int i = 0; i < sim->numberOfBodies; i++) {
        DrawSphere( Vector3Scale(sim->bodiesArray[i].position, 1E-11f),
-                    0.005F * logf(sim->bodiesArray[i].radius),
-                    sim->bodiesArray[i].color );
+                   0.005F * logf(sim->bodiesArray[i].radius),
+                   sim->bodiesArray[i].color );
 
         DrawPoint3D(Vector3Scale(sim->bodiesArray[i].position, 1E-11f), sim->bodiesArray[i].color);
     }
@@ -110,7 +110,7 @@ void renderView(View* view, OrbitalSim_t* sim)
        a point is drawn .This is for efficiency. More in the README file. */
     for (int i = 0; i < sim->numberOfAsteroids; i++) {
         camAsteroidDistance = Vector3Distance( Vector3Scale(sim->asteroidsArray[i].position,1E-11f),
-                                                view->camera.position );
+                                               view->camera.position );
         
         if (camAsteroidDistance < 8) {
             DrawSphere( Vector3Scale(sim->asteroidsArray[i].position, 1E-11f),

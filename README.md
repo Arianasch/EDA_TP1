@@ -34,23 +34,25 @@ En el caso de Alfa Centauri, ambos cuerpos inician con posiciones de exponente 1
 valores pueden ser almacenados con precisión por variables de tipo float.
 
 VELOCIDADES
-Mín: 5.809369653802155E-00F (sol, coordenada x)
-Máx:  5.056613955108243E+04F (mercurio, coordenada z)
-Alfa Centauri: 7.120E+03F 8.430E03F
+La coordenada de velocidad inicial de menor módulo es la del sol, con un valor de 
+5.809369653802155E-00, y la de mayor módulo es la coordenada z de Mercurio con un valor de
+5.056613955108243E+04. En el caso de Alfa Centauri, las coordenadas de velocidades iniciales de
+menor y mayor módulo son 7.120E+03F y 8.430E03F respectivamente. Dado que Mercurio es el planeta
+más cercano al Sol, siempre va a ser el cuerpo (sin contar los asteroides) cuya velocidad tenga
+mayor módulo, y como tiene tanto margen (es de orden 4, cuando el orden el máximo y mínimo de punto
+flotante es 32), consideramos que las velocidades pueden ser representadas mediante este tipo de
+dato cómodamente.
 
-Aceleraciones
-Para analizar la precisión de las aceleraciones consideramos pertinente evaluar las operaciones 
-matemáticas realizadas en el cálculo de las mismas.
-	1.	Resta de posiciones
-			Dado que los valores de las posiciones pertenecen al rango de los datos de tipo float
-			como se evaluó previamente, la resta de dos valores cuales quiera no tiene por qué traer problemas.
-	2.	Normalización
-			Esta operación es realizada con una función de la librería raymath sobre un dato de tipo Vector3, 
-			que tiene 3 campos de tipo float. El resultado tendrá la misma precisión que el dato normalizado, 
-			por lo cual pertenece al rango de los puntos flotantes.
-	3.	Multiplicar valores por sí mismos y sumarlos
-			Al multiplicar un valor por sí mismo el módulo de su exponente aumenta, por lo cual en algún momento
-			el valor alcanzado puede exceder el rango de float. REVISAR
+ACELERACIONES
+Para analizar la precisión de las aceleraciones evaluamos en papel la aceleración de que genera la
+atracción entre el sol y Mercurio en la primera iteración, dado que el sol es el cuerpo más másico
+del sistema solar, y Mercurio el planeta más cercano al mismo. Tanto el valor de la aceleración
+como los de las variables intermedias que utilizamos para las cuentas pertenecían al rango de punto
+flotante y dejaban margen (es decir, el riesgo de llegar a overflow o underflow era muy bajo).
+
+En conclusión, consideramos que la precisión del punto flotante es suficiente para actualizar las
+posiciones de los cuerpos representados en esta simulación.
+			
 
 
 ## Complejidad computacional con asteroides
@@ -59,6 +61,10 @@ de las causas más influyentes sostenemos que fue el haber intentado calcular la
 entre cada asteroide y cada planeta, ya que supuso realizar por lo menos 4500 operaciones. Para 
 resolverlo, decidimos calcular solo la influencia del cuerpo de mayor masa del sistema sobre cada 
 asteroide; en el caso del sistema solar el mismo es el sol. 
+
+También consideramos seguir la misma línea de pensamiento que cuando calculamos las atracciones de 
+los planetas entre sí, es decir considerar la Ley de Acción y Reacción para optimizar el programa como
+se explicará más adelante, pero al final descartamos la idea porque no la consideramos óptima.
 
 Por otro lado, identificamos un cuello de botella que involucra lo gráfico. Resulta que  probamos 
 la sección de vista usando las funciones DrawSphere y DrawPoint3D por separado cada una y en 
@@ -70,13 +76,6 @@ significa una mayor complejidad computacional. Para resolver esto decidimos limi
 DrawSphere. En el caso de los planetas y el sol, al ser solo 9 instancias dibujamos siempre tanto la
 esfera como el punto, mientras que para los asteroides el programa elije de qué forma dibujar
 cada uno en base a la distancia de la cámara al mismo.
-
-
-REVISAR!!!!!
-También consideramos seguir la misma línea de pensamiento que cuando calculamos las atracciones de 
-los planetas entre sí, es decir considerar la Ley de Acción y Reacción para optimizar el programa como
-se explicará más adelante, pero al final descartamos la idea porque AGREGAR.
-
 
 ## Mejora de la complejidad computacional
 Inicialmente hicimos dos for anidados y para cada planeta calculamos la atracción de todos los demás
@@ -107,6 +106,6 @@ campo numberOfBodies y reemplazar lo que actualmente dice sistema solar por el s
 
 El easter egg es la linea 53 del archivo orbitalSim.cpp. Al establecer phi=0, la unica variable 
 aleatoria para cada asteroide es la r. Sin embargo, las coordenadas y,z son cero y entonces todos 
-los asteroides , al comenzar la simulacion, estan todos a lo largo del eje x (tienen distintas r 
-asignadas de manera aleatoria). Si se corre el programa asi, al comienzo entonces veriamos:
+los asteroides, al comenzar la simulación, estan todos a lo largo del eje x (tienen distintas r 
+asignadas de manera aleatoria). Si se corre el programa así, al comienzo veríamos:
 ![phi=0](https://github.com/user-attachments/assets/397a520e-5282-4b0c-9ca9-0b00f56735cc)

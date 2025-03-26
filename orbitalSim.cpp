@@ -117,6 +117,8 @@ OrbitalSim_t* constructOrbitalSim(float timeStep)
 
 /**
  * @brief Destroys an orbital simulation
+ * 
+ * @param sim The orbital simulation
  */
 void destroyOrbitalSim(OrbitalSim_t *sim)
 {
@@ -156,15 +158,15 @@ void updateOrbitalSim(OrbitalSim_t *sim)
             unitVectors = Vector3Normalize(differencePositions);
             squareNorm = differencePositions.x * differencePositions.x +
                          differencePositions.y * differencePositions.y +
-                differencePositions.z * differencePositions.z;
-            asteroidAcceleration = Vector3Scale(unitVectors,
+                         differencePositions.z * differencePositions.z;
+            asteroidAcceleration = Vector3Scale( unitVectors,
                                                  sim->bodiesArray[0].mass * (-1) * GRAVITATIONAL_CONSTANT / squareNorm );
         
             sim->asteroidsArray[i].velocity = Vector3Add( sim->asteroidsArray[i].velocity, 
                                                           Vector3Scale(asteroidAcceleration, sim->timestep) );
         
             sim->asteroidsArray[i].position = Vector3Add( sim->asteroidsArray[i].position, 
-                                                      Vector3Scale(sim->asteroidsArray[i].velocity, sim->timestep) );
+                                                          Vector3Scale(sim->asteroidsArray[i].velocity, sim->timestep) );
     }
 
     for (int j = 0; j < sim->numberOfBodies; j++) {
