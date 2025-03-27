@@ -103,10 +103,10 @@ y opuesta) logramos optimizar notablemente el programa. Se adjunta foto de cómo
 Se multiplicó por 1000 la masa de Júpiter, de manera que su masa terminó siendo 1.89818722E30
 y la del Sol 1.988500E230, es decir que tienen el mismo orden y una diferencia relativamente baja.
 Es por esto que no nos sorprendió observar que el Sol y Júpiter "orbitaban uno alrededor del otro". 
-En lo que respecta a los otros cuerpos, Mercurio siguió orbitando alrededor del Sol, y a partir de
-cierto instante Venus comenzó a orbitar alrededor de Júpiter. Los demás planetas fueron eyectándose
-del sistema uno a uno.
-
+En lo que respecta a los otros cuerpos, Mercurio siguió orbitando alrededor del Sol, y a partir 
+aproximadamente de los 100 años Venus comenzó a orbitar alrededor de Júpiter. Los demás planetas
+fueron eyectándose del sistema uno a uno.
+![jupiterMasaPor1000](https://github.com/user-attachments/assets/57979b52-1ba4-447e-aa73-b948bd7ae1c2)
 
 Se reemplazo al Sol por un agujero negro multiplicando su masa por distintos valores. Al
 multiplicarlo por 3, 12 y 25, algunos planetas cambiaron sus órbitas y otros salieron eyectados. Al 
@@ -116,7 +116,7 @@ Elegimos emular un agujero negro de esa forma basándonos en las siguientes fuen
 https://ciencia.nasa.gov/universo/que-son-los-agujeros-negros/
 https://www.nationalgeographic.es/espacio/agujeros-negros
 https://ciencia.nasa.gov/universo/diez-preguntas-que-podrias-tener-sobre-los-agujeros-negros/
-
+![masaSolarPor25](https://github.com/user-attachments/assets/77407763-8629-48a8-9d20-46475a4fe87b)
 
 Se probó reemplazar el Sistema Solar por Alfa Centauri, cambiando el valor de numberOfBodies a 2
 y las asignaciones de valores iniciales de bodiesArray a las efemérides de Alfa Centauri. Dado que 
@@ -131,6 +131,7 @@ aceleraciones de los asteroides respecto a ambos. Para solucionarlo, se podría 
 análisis de las aceleraciones de los asteroides, agregando que si la cantidad de cuerpos supera un 
 valor umbral, entonces solo se tendrían en cuenta uno o alguno de los cuerpos de mayor masa; sino, 
 se tendrían en cuenta todos los cuerpos.
+![alphaCentaury](https://github.com/user-attachments/assets/0bc5bc47-6a98-4f67-8237-5493dc27b20b)
 
 
 El easter egg está en la lénea 54 del archivo orbitalSim.cpp, la cual establece que phi = 0. Esto
@@ -138,3 +139,4 @@ hace que al calcular la posición de los asteroides, las coordenada x que es r *
 r, y la coordenada z que es r * sinf(phi) quede en 0, por lo que todos los asteroides comienzan
 posicionados a lo largo del eje x. Si se corre el programa así, al comienzo veríamos algo similar a
 lo siguiente:
+![phi=0](https://github.com/user-attachments/assets/97a79782-65b4-4209-906b-139f39035162)
