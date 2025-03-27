@@ -8,13 +8,20 @@ puntos dependiendo distancia.
 Toda la parte de modelo fue realizada en conjunto. Optamos por trabajar en grupo.
 
 
-
-
 ## Verificación del timestep
 
 Experimentamos con distintos valores de paso temporal, e incluso aumentando el número de asteroides
 el comportamiento de la simulación se mantenía consistente con el paso de un número considerable de
-años.
+años (100 o más). Probamos con un timeMultiplier = 1000 * SECONDS_PER_DAY para 100 fps, aumentando
+así los días por segundo y la velocidad de simulación para un mismo valor de fps, es decir 
+aumentamos la cantidad de cálculos por segundo. Aun así, la simulación funcionaba consistentemente. 
+Repetimos la experiencia con timeMultiplier = 1500 * SECONDS_PER_DAY y con
+timeMultiplier = 2000 * SECONDS_PER_DAY  y el modo de funcionamiento se repitió. Luego probamos 
+aumentandolos fps a 150 para este ultimo valor de timeMultiplier, y continuó funcionando 
+consistentemente.
+En conclusión, consideramos que la simulación fue optimizada exitosamente, ya que soporta altos 
+valores de velocidad de simulación. Igualmente, para visualizar la orbitaciones de los planetas
+cómodamente, consideramos apropiado un timeMultiplier de 100 * SECONDS_PER_DAY a 100 fps.
 
 
 

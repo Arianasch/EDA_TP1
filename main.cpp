@@ -15,7 +15,7 @@
 int main()
 {
     int fps = 100;                                 // Frames per second
-    float timeMultiplier = 100 * SECONDS_PER_DAY; // Simulation speed: 100 days per simulation second
+    float timeMultiplier = 2000 * SECONDS_PER_DAY; // Simulation speed: 100 days per simulation second
     float timeStep = timeMultiplier / fps;
 
     OrbitalSim_t *sim = constructOrbitalSim(timeStep);
