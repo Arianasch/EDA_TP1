@@ -66,7 +66,9 @@ aceleraciones de los cuerpos mencionados, y observamos resultados similares a lo
 
 En conclusión, consideramos que la precisión del punto flotante es suficiente para actualizar las
 posiciones de los cuerpos representados en esta simulación.
-			
+![sol-mercurio](https://github.com/user-attachments/assets/a36dd832-aeeb-4c87-bb31-1ff1fd15cba3)
+![cuentas-sol-neptuno](https://github.com/user-attachments/assets/124a0ab9-ff6c-474f-96a0-9fadbc17c485)
+![aceleraciones](https://github.com/user-attachments/assets/a0c9a90c-74c3-4415-aaed-ded2bd35dd49)
 
 
 ## Complejidad computacional con asteroides
