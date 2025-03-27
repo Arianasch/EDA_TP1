@@ -14,7 +14,7 @@
 
 int main()
 {
-    int fps = 120;                                 // Frames per second
+    int fps = 100;                                 // Frames per second
     float timeMultiplier = 100 * SECONDS_PER_DAY; // Simulation speed: 100 days per simulation second
     float timeStep = timeMultiplier / fps;
 

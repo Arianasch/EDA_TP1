@@ -14,6 +14,8 @@
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
 
+#define MAX_CAMERA_ASTEROID_DISTANCE 8
+
 /**
  * @brief Converts a timestamp (number of seconds since 1/1/2022)
  *        to an ISO date ("YYYY-MM-DD")
@@ -89,7 +91,7 @@ bool isViewRendering(View *view)
  */
 void renderView(View* view, OrbitalSim_t* sim)
 {
-    float camAsteroidDistance;
+    float cameraAsteroidDistance;
     UpdateCamera(&view->camera, CAMERA_FREE);
 
     BeginDrawing();
@@ -109,10 +111,10 @@ void renderView(View* view, OrbitalSim_t* sim)
     /* If the camera position is not too far away from the asteroid, a sphere is drawn. Otherwise,
        a point is drawn .This is for efficiency. More in the README file. */
     for (int i = 0; i < sim->numberOfAsteroids; i++) {
-        camAsteroidDistance = Vector3Distance( Vector3Scale(sim->asteroidsArray[i].position,1E-11f),
+        cameraAsteroidDistance = Vector3Distance( Vector3Scale(sim->asteroidsArray[i].position,1E-11f),
                                                view->camera.position );
         
-        if (camAsteroidDistance < 8) {
+        if (cameraAsteroidDistance < MAX_CAMERA_ASTEROID_DISTANCE) {
             DrawSphere( Vector3Scale(sim->asteroidsArray[i].position, 1E-11f),
                         0.005F * logf(sim->asteroidsArray[i].radius),
                         sim->asteroidsArray[i].color );  

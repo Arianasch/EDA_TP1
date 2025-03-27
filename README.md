@@ -8,11 +8,15 @@ puntos dependiendo distancia.
 Toda la parte de modelo fue realizada en conjunto. Optamos por trabajar en grupo.
 
 
+
+
 ## Verificación del timestep
 
 Experimentamos con distintos valores de paso temporal, e incluso aumentando el número de asteroides
 el comportamiento de la simulación se mantenía consistente con el paso de un número considerable de
 años.
+
+
 
 ## Verificación del tipo de datos float
 
@@ -22,7 +26,7 @@ Dados como están hechos los datos de tipo float, su rango es
 •	+1.1754944 E-38 a +3.4028235 E+38
 
 MASAS
-La mayor masa del sistema solar es la del sol, con un valor de 1.9885 E30, y la menor masa es la de
+La mayor masa del sistema solar es la del Sol, con un valor de 1.9885 E30, y la menor masa es la de
 Mercurio, de 0.3302 E24. En el caso de Alfa Centauri, las masas son 2.167 E30 y 1.789 E30. Todos 
 estos valores pertenecen al rango de los valores positivos de punto flotante, por lo cual este tipo
 de dato sirve perfectamente para almacenar las masas de ambos sistemas.
@@ -34,7 +38,7 @@ En el caso de Alfa Centauri, ambos cuerpos inician con posiciones de exponente 1
 valores pueden ser almacenados con precisión por variables de tipo float.
 
 VELOCIDADES
-La coordenada de velocidad inicial de menor módulo es la del sol, con un valor de 
+La coordenada de velocidad inicial de menor módulo es la del Sol, con un valor de 
 5.809369653802155E-00, y la de mayor módulo es la coordenada z de Mercurio con un valor de
 5.056613955108243E+04. En el caso de Alfa Centauri, las coordenadas de velocidades iniciales de
 menor y mayor módulo son 7.120E+03F y 8.430E03F respectivamente. Dado que Mercurio es el planeta
@@ -44,11 +48,14 @@ flotante es 32), consideramos que las velocidades pueden ser representadas media
 dato cómodamente.
 
 ACELERACIONES
-Para analizar la precisión de las aceleraciones evaluamos en papel la aceleración de que genera la
-atracción entre el sol y Mercurio en la primera iteración, dado que el sol es el cuerpo más másico
-del sistema solar, y Mercurio el planeta más cercano al mismo. Tanto el valor de la aceleración
-como los de las variables intermedias que utilizamos para las cuentas pertenecían al rango de punto
-flotante y dejaban margen (es decir, el riesgo de llegar a overflow o underflow era muy bajo).
+Para analizar la precisión de las aceleraciones evaluamos manualmente la aceleración que genera la
+atracción entre el Sol y Mercurio en la primera iteración (pues el Sol es el cuerpo de mayor masa
+del sistema solar, y Mercurio el planeta más cercano al mismo) y la aceleración que genera la 
+atracción entre el Sol y Neptuno (siendo Neptuno el más lejano al mismo). Tanto el valor de las 
+aceleraciones como los de las variables intermedias que utilizamos para las cuentas pertenecían al 
+rango de punto flotante y dejaban margen (es decir, el riesgo de llegar a overflow o underflow era
+muy bajo). Adicionalmente hicimos que el programa muestre en la terminal los valores de las 
+aceleraciones de los cuerpos mencionados, y observamos resultados similares a los calculados manualmente.
 
 En conclusión, consideramos que la precisión del punto flotante es suficiente para actualizar las
 posiciones de los cuerpos representados en esta simulación.
@@ -56,26 +63,24 @@ posiciones de los cuerpos representados en esta simulación.
 
 
 ## Complejidad computacional con asteroides
-Al agregar los 500 asteroides los FSP bajaron notablemente y la simulación se volvió muy lenta. Una
+Al agregar los 500 asteroides los FPS bajaron notablemente y la simulación se volvió muy lenta. Una
 de las causas más influyentes sostenemos que fue el haber intentado calcular la fuerza de atracción 
 entre cada asteroide y cada planeta, ya que supuso realizar por lo menos 4500 operaciones. Para 
 resolverlo, decidimos calcular solo la influencia del cuerpo de mayor masa del sistema sobre cada 
-asteroide; en el caso del sistema solar el mismo es el sol. 
-
-También consideramos seguir la misma línea de pensamiento que cuando calculamos las atracciones de 
-los planetas entre sí, es decir considerar la Ley de Acción y Reacción para optimizar el programa como
-se explicará más adelante, pero al final descartamos la idea porque no la consideramos óptima.
+asteroide; en el caso del sistema solar el mismo es el Sol.
 
 Por otro lado, identificamos un cuello de botella que involucra lo gráfico. Resulta que  probamos 
 la sección de vista usando las funciones DrawSphere y DrawPoint3D por separado cada una y en 
 simultáneo, y llegamos a la conclusión de que cuando hacíamos uso de la función DrawSphere 
-significaba más costo computacional. Esto se debe a que DrawPoint3D debe hacer una tarea muy 
-sencilla como lo es ubicar uno o varios píxeles, mientras que DrawSphere conlleva sombreados,
-cálculo de curvas, iluminación y más vértices que un punto, es decir, requiere más procesamiento y
-significa una mayor complejidad computacional. Para resolver esto decidimos limitar el uso 
-DrawSphere. En el caso de los planetas y el sol, al ser solo 9 instancias dibujamos siempre tanto la
-esfera como el punto, mientras que para los asteroides el programa elije de qué forma dibujar
-cada uno en base a la distancia de la cámara al mismo.
+significaba mayor costo computacional, por lo tanto el programa se ralentizaba y se reducían los FPS.
+Esto se debe a que DrawPoint3D debe hacer una tarea muy sencilla como lo es ubicar uno o varios
+píxeles, mientras que DrawSphere conlleva sombreados, cálculo de curvas, iluminación y más vértices 
+que un punto, es decir, requiere más procesamiento y significa una mayor complejidad computacional.
+Para resolver esto decidimos limitar el uso DrawSphere. En el caso de los planetas y el Sol, al ser
+solo 9 instancias dibujamos siempre tanto la esfera como el punto, mientras que para los asteroides
+el programa elije de qué forma dibujar cada uno en base a la distancia de la cámara al mismo.
+
+
 
 ## Mejora de la complejidad computacional
 Inicialmente hicimos dos for anidados y para cada planeta calculamos la atracción de todos los demás
@@ -83,29 +88,46 @@ sobre el mismo. Luego nos dimos cuenta de que estábamos haciendo dos veces las 
 decir estábamos calculando la influencia del planeta A sobre el planeta B y viceversa, así que 
 teniendo en consideración la Ley de Acción y Reacción (que toda acción genera una reacción igual 
 y opuesta) logramos optimizar notablemente el programa. Se adjunta foto de cómo se pensaron los 
-índices de los for anidados para este último caso: 
-![matriztrianguladasup](https://github.com/user-attachments/assets/ceed4feb-b150-4316-8c41-b610bd5d4480)
+índices de los for anidados para este último caso:
+
+
 
 ## Bonus points
-Se aumento por 1000 la masa de Jupiter y, como primera observación, notamos que los 8 planetas
-dejaron de orbitar al rededor del Sol. Algunos se alejaron y el Sol comenzo a cambiar su posicion 
-bruscamente (cosa que antes claramente no ocurría) y parecería que describía una especie de 
-trayectoria al rededor de Jupiter, pero este a la vez también cambiaba bruscamente de posicion. 
-Planetas como Mercurio seguian orbitando al rededor del Sol, otros se alejaban y regresaban.
+Se multiplicó por 1000 la masa de Júpiter, de manera que su masa terminó siendo 1.89818722E30
+y la del Sol 1.988500E230, es decir que tienen el mismo orden y una diferencia relativamente baja.
+Es por esto que no nos sorprendió observar que el Sol y Júpiter "orbitaban uno alrededor del otro". 
+En lo que respecta a los otros cuerpos, Mercurio siguió orbitando alrededor del Sol, y a partir de
+cierto instante Venus comenzó a orbitar alrededor de Júpiter. Los demás planetas fueron eyectándose
+del sistema uno a uno.
 
-Luego se reemplazo al Sol por un agujero negro multiplicando la masa de este por cinco. 
-Fuente: https://www.nationalgeographic.es/espacio/agujeros-negros.
-Notamos que tanto los planetas como asteroides orbitaban con mayor rapidez, y aquellos planetas 
-que estaban más alejados se acercaban más al sol. Podemos observar que la fuerza de atracción de
-los cuerpos hacia el sol aumento notablemente.
 
-Probamos reemplazar el Sistema Solar por el Alfa Centauri. Los asteroides formaban una especie de
-anillo que se expandia e interaccionaban mucho mas con la estrella Alfa Centauri B. Tambien nos 
-dimos cuenta de que nuestro codigo es flexible ante cualquier sistema estelar, basta cambiar el 
-campo numberOfBodies y reemplazar lo que actualmente dice sistema solar por el sistema estelar deseado.
+Se reemplazo al Sol por un agujero negro multiplicando su masa por distintos valores. Al
+multiplicarlo por 3, 12 y 25, algunos planetas cambiaron sus órbitas y otros salieron eyectados. Al 
+multiplicarlo por 50, todos salían eyectados rápidamente. En todos los casos, los asteroides
+orbitaban más rápido.
+Elegimos emular un agujero negro de esa forma basándonos en las siguientes fuentes:
+https://ciencia.nasa.gov/universo/que-son-los-agujeros-negros/
+https://www.nationalgeographic.es/espacio/agujeros-negros
+https://ciencia.nasa.gov/universo/diez-preguntas-que-podrias-tener-sobre-los-agujeros-negros/
 
-El easter egg es la linea 53 del archivo orbitalSim.cpp. Al establecer phi=0, la unica variable 
-aleatoria para cada asteroide es la r. Sin embargo, las coordenadas y,z son cero y entonces todos 
-los asteroides, al comenzar la simulación, estan todos a lo largo del eje x (tienen distintas r 
-asignadas de manera aleatoria). Si se corre el programa así, al comienzo veríamos:
-![phi=0](https://github.com/user-attachments/assets/397a520e-5282-4b0c-9ca9-0b00f56735cc)
+
+Se probó reemplazar el Sistema Solar por Alfa Centauri, cambiando el valor de numberOfBodies a 2
+y las asignaciones de valores iniciales de bodiesArray a las efemérides de Alfa Centauri. Dado que 
+hacer estos cambios fue sencillo, inicialmente se consideró que el código escrito era bastante
+flexible, pero rápidamente se pudo observar en la simulación que no habíamos tomado algo en
+consideración: al programar la simulación adecuándola al sistema solar, las aceleraciones de los 
+asteroides eran calculadas considerando solo el primer elemento del arreglo de cuerpos, pues en 
+Alfa Centauri orbitaban alrededor de uno solo de los cuerpos y no de ambos. Esto tenía sentido 
+asumiendo que había 9 cuerpos en el sistema y que el de mayor masa era el primero del arreglo,
+pero habiendo dos cuerpos de masas similares se consideró que sería más adecuado calcular las 
+aceleraciones de los asteroides respecto a ambos. Para solucionarlo, se podría complejizar el 
+análisis de las aceleraciones de los asteroides, agregando que si la cantidad de cuerpos supera un 
+valor umbral, entonces solo se tendrían en cuenta uno o alguno de los cuerpos de mayor masa; sino, 
+se tendrían en cuenta todos los cuerpos.
+
+
+El easter egg está en la lénea 54 del archivo orbitalSim.cpp, la cual establece que phi = 0. Esto
+hace que al calcular la posición de los asteroides, las coordenada x que es r * cosf(phi) quede en 
+r, y la coordenada z que es r * sinf(phi) quede en 0, por lo que todos los asteroides comienzan
+posicionados a lo largo del eje x. Si se corre el programa así, al comienzo veríamos algo similar a
+lo siguiente:

@@ -29,7 +29,6 @@ struct EphemeridesBody
 EphemeridesBody solarSystem[] = {
     {
         "Sol",
-        //4*1988500E24F, if the sun was a black hole
         1988500E24F,
         695700E3F,
         GOLD,
