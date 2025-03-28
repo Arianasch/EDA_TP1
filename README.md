@@ -98,7 +98,7 @@ decir estábamos calculando la influencia del planeta A sobre el planeta B y vic
 teniendo en consideración la Ley de Acción y Reacción (que toda acción genera una reacción igual 
 y opuesta) logramos optimizar notablemente el programa. Se adjunta foto de cómo se pensaron los 
 índices de los for anidados para este último caso:
-
+![for-anidados](https://github.com/user-attachments/assets/2b0a1eb3-f6eb-4779-994d-f9f474266e67)
 
 
 ## Bonus points
