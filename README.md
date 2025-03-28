@@ -66,17 +66,17 @@ aceleraciones de los cuerpos mencionados, y observamos resultados similares a lo
 
 En conclusión, consideramos que la precisión del punto flotante es suficiente para actualizar las
 posiciones de los cuerpos representados en esta simulación.
-![sol-mercurio](https://github.com/user-attachments/assets/a36dd832-aeeb-4c87-bb31-1ff1fd15cba3)
 ![cuentas-sol-neptuno](https://github.com/user-attachments/assets/124a0ab9-ff6c-474f-96a0-9fadbc17c485)
 ![aceleraciones](https://github.com/user-attachments/assets/a0c9a90c-74c3-4415-aaed-ded2bd35dd49)
-
+Igualmente probamos con tipos de datos double y no hay una diferencia significante de precision que lo justifique.
 
 ## Complejidad computacional con asteroides
 Al agregar los 500 asteroides los FPS bajaron notablemente y la simulación se volvió muy lenta. Una
 de las causas más influyentes sostenemos que fue el haber intentado calcular la fuerza de atracción 
 entre cada asteroide y cada planeta, ya que supuso realizar por lo menos 4500 operaciones. Para 
 resolverlo, decidimos calcular solo la influencia del cuerpo de mayor masa del sistema sobre cada 
-asteroide; en el caso del sistema solar el mismo es el Sol.
+asteroide; en el caso del sistema solar el mismo es el Sol.Asi, el O grande de nuestro algoritmo para el calculo de las
+aceleraciones de los planetas disminuyo notablemente.
 
 Por otro lado, identificamos un cuello de botella que involucra lo gráfico. Resulta que  probamos 
 la sección de vista usando las funciones DrawSphere y DrawPoint3D por separado cada una y en 
@@ -88,6 +88,8 @@ que un punto, es decir, requiere más procesamiento y significa una mayor comple
 Para resolver esto decidimos limitar el uso DrawSphere. En el caso de los planetas y el Sol, al ser
 solo 9 instancias dibujamos siempre tanto la esfera como el punto, mientras que para los asteroides
 el programa elije de qué forma dibujar cada uno en base a la distancia de la cámara al mismo.
+El valor elegido para la distancia se determino ya que consideramos que es la mejor 
+relacion entre lo grafico y la complejidad computacional que conlleva tanto representar las lineas como las esferas.
 
 
 
@@ -99,7 +101,7 @@ teniendo en consideración la Ley de Acción y Reacción (que toda acción gener
 y opuesta) logramos optimizar notablemente el programa. Se adjunta foto de cómo se pensaron los 
 índices de los for anidados para este último caso:
 ![for-anidados](https://github.com/user-attachments/assets/2b0a1eb3-f6eb-4779-994d-f9f474266e67)
-
+Concluimos que, al reducir el numero de operaciones, reducimos el O grande.
 
 ## Bonus points
 Se multiplicó por 1000 la masa de Júpiter, de manera que su masa terminó siendo 1.89818722E30
@@ -133,6 +135,11 @@ aceleraciones de los asteroides respecto a ambos. Para solucionarlo, se podría 
 análisis de las aceleraciones de los asteroides, agregando que si la cantidad de cuerpos supera un 
 valor umbral, entonces solo se tendrían en cuenta uno o alguno de los cuerpos de mayor masa; sino, 
 se tendrían en cuenta todos los cuerpos.
+Para solucionarlo, en la linea 152 se podria agregar otro for para trabajar con los cuerpos del 
+sistema estelar elegido. Se deberia crear una macro y, dependiendo del sistema, que valor maximo
+puede tomar. Es decir, asi se podria calcular la aceleracion de cada asteroide contra las dos 
+estrellas en el caso del sistema Alfa Centauri y solucionar el problema. La misma linea de pensamiento
+se aplica para la variable que maneja la cantidad de cuerpos celestes.
 ![alphaCentaury](https://github.com/user-attachments/assets/0bc5bc47-6a98-4f67-8237-5493dc27b20b)
 
 

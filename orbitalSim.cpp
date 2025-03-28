@@ -149,6 +149,7 @@ void updateOrbitalSim(OrbitalSim_t *sim)
 
     /* Every asteroid's acceleration is calculated only according to the Sun, 
        therefore the operations are not the same as for the planets. */
+   
     for (int i = 0; i < sim->numberOfAsteroids; i++) {
             differencePositions = Vector3Subtract(sim->asteroidsArray[i].position, sim->bodiesArray[0].position);
             unitVectors = Vector3Normalize(differencePositions);
@@ -188,7 +189,7 @@ static void calculatePlanetsAccelerations(OrbitalSim_t *sim, Vector3 *accelerati
 {
     Vector3 differencePositions, unitVectors;
     float squareNorm;
-   
+
     for (int i = 0; i < sim->numberOfBodies; i++) {
         for (int j = i+1; j < sim->numberOfBodies ; j++) {
             /* j = i+1 means that the gravitational force between two planets is calculated once.
